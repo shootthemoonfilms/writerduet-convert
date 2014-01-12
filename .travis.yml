@@ -4,4 +4,4 @@ go:
   - 1.1
   - tip
 install:
-  - go build
+  - go build -v
