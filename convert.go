@@ -29,15 +29,12 @@ func main() {
 	case "fdx":
 		break
 	default:
-		fmt.Printf("Valid formats are fountain, celtx, or fdx\n")
+		flag.PrintDefaults()
+		fmt.Println("Valid formats are fountain, celtx, or fdx")
 		return
 	}
 
-	if *SCRIPT == "" {
-		flag.PrintDefaults()
-		return
-	}
-	if *DEST == "" {
+	if *SCRIPT == "" || *DEST == "" {
 		flag.PrintDefaults()
 		return
 	}
