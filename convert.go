@@ -13,15 +13,15 @@ import (
 )
 
 var (
-	FORMAT = flag.String("format", "fountain", "Target format (fountain, celtx, fdx)")
-	SCRIPT = flag.String("script", "", "Source script")
-	DEST   = flag.String("dest", "", "Destination file")
+	format = flag.String("format", "fountain", "Target format (fountain, celtx, fdx)")
+	script = flag.String("script", "", "Source script")
+	dest   = flag.String("dest", "", "Destination file")
 )
 
 func main() {
 	flag.Parse()
 
-	switch *FORMAT {
+	switch *format {
 	case "fountain":
 		break
 	case "celtx":
@@ -34,12 +34,12 @@ func main() {
 		return
 	}
 
-	if *SCRIPT == "" || *DEST == "" {
+	if *script == "" || *dest == "" {
 		flag.PrintDefaults()
 		return
 	}
 
-	file, err := os.Open(*SCRIPT)
+	file, err := os.Open(*script)
 	if err != nil {
 		panic(err)
 		return
@@ -48,7 +48,7 @@ func main() {
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("script", filepath.Base(*SCRIPT))
+	part, err := writer.CreateFormFile("script", filepath.Base(*script))
 	if err != nil {
 		panic(err)
 		return
@@ -57,7 +57,7 @@ func main() {
 
 	// Write other supporting fields
 	_ = writer.WriteField("MAX_FILE_SIZE", "100000000")
-	_ = writer.WriteField("format", *FORMAT)
+	_ = writer.WriteField("format", *format)
 	_ = writer.WriteField("agree_tou", "on")
 
 	err = writer.Close()
@@ -75,19 +75,19 @@ func main() {
 	if err != nil {
 		panic(err)
 		return
-	} else {
-		body := &bytes.Buffer{}
-		_, err := body.ReadFrom(resp.Body)
-		if err != nil {
-			panic(err)
-			return
-		}
-		resp.Body.Close()
-		err = ioutil.WriteFile(*DEST, body.Bytes(), 0644)
-		if err != nil {
-			panic(err)
-			return
-		}
+	}
+
+	body = &bytes.Buffer{}
+	_, err = body.ReadFrom(resp.Body)
+	if err != nil {
+		panic(err)
+		return
+	}
+	resp.Body.Close()
+	err = ioutil.WriteFile(*dest, body.Bytes(), 0644)
+	if err != nil {
+		panic(err)
+		return
 	}
 }
 
